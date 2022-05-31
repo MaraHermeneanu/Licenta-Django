@@ -1,0 +1,73 @@
+{% extends "application/base.html" %}
+{% load crispy_forms_tags %}
+{% load socialaccount %}
+
+{% block title %} <title> Login </title> {% endblock %}
+
+{% block content %}
+
+
+{% if user.is_authenticated %}
+
+<div class="content-section">
+    You are already logged in.
+
+</div>
+<hr>
+<div class="border-top pt-3">
+    <small class="text-muted">
+
+        <a class="ml-2" href="{% url 'logout' %}">Log out</a>
+    </small>
+</div>
+
+{% else %}
+
+<br>
+<div class="flex min-h-screen bg-white" style="min-height: 90vh; justify-content: center;">
+
+    <div class="w-1/2 bg-cover md:block hidden"
+        style="margin-right: 20px; box-sizing:border-box; background-image:  url(https://images.pexels.com/photos/3137073/pexels-photo-3137073.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940)">
+    </div>
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Log In</legend>
+                {{ form|crispy }}
+                <small class="text-muted">The fields marked with * are mandatory </small>
+            </fieldset>
+            
+            <br>
+            <div class="form-group" style="display: inline;">
+                <button class="btn btn-outline-info" type="submit">Login</button> <span> or </span>
+            </div>
+            <a class="btn btn-outline-info" href="{% provider_login_url 'google' %}">Login with Google</a>
+        </form>
+        
+        <br>
+        <hr>
+        <br>
+        <div style="display: flex; justify-content: center;">
+            <a href="{% url 'face_login' %}" class="btn btn-primary">Login using Face ID</a>
+        </div>
+        <br>
+
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Forgot password?
+                <a class="ml-2" href="{% url 'password_reset' %}">Reset your password</a>
+            </small>
+            <br>
+            <small class="text-muted">
+                Need an account?
+                <a class="ml-2" href="{% url 'register' %}">Sign up now</a>
+            </small>
+        </div>
+
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock content %}

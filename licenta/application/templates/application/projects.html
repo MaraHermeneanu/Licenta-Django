@@ -1,0 +1,118 @@
+{% extends "application/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} <title> 3D Reconstruction </title> {% endblock %}
+
+{% block content %}
+
+    <style>
+        #div_id_left_image {
+            display: inline-block;
+            width: 50%;
+        }
+
+        #div_id_right_image {
+            display: inline-block;
+        }
+
+        .download {
+            background: url('{{STATIC_URL}}/static/application/download.png') no-repeat;
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background-size: contain;
+        }
+    </style>
+
+    {% if user.is_authenticated %}
+        <br>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">New project</legend>
+                {{ form|crispy }}
+            </fieldset>
+
+            <button class="btn btn-outline-info" type="submit">Generate</button>
+        </form>
+
+        <br>
+        <legend class="border-bottom mb-4">My projects</legend>
+
+        {% if ProjectsObjs %}
+            <!-- display projects  -->
+            <div class="p-4 bg-white rounded-lg border shadow-md sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                <div class="flow-root">
+                    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for project in ProjectsObjs %}
+                            <li class="py-3 sm:py-4">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        <img class="w-16 h-16 rounded-full" src="{{project.user.profile.image.url}}" alt="Profile image">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {{project.name}}  {% if project.private %} (Private) {% else %} (Public) {% endif %}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            {{project.date}}
+                                        </p>
+                                    </div>
+                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <div class="btn btn_red">
+                                            <a href="{{project.disparity.url}}" target="_blank">Open Disparity Map</a> 
+                                            <a id="downloadPly" href="{% url 'download_ply' %}" target="_blank"><span class="download"></span> Download PLY</a> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <!-- delete projects -->
+            <br>
+            <legend class="border-bottom mb-4">Delete projects</legend>
+            <div class="content-section"> Please select the name for the project you want to delete. </div>
+            <br>
+
+            <form method="POST" action="{% url 'delete_project' %}">
+                {% csrf_token %}
+
+                <div style="display: inline-flex; margin-bottom: 10px;">
+                    <select class="form-select" aria-label="Default select example" name="select" required>
+                        <option value="" disabled selected>Open the select menu</option>
+                        {% for project in ProjectsObjs %}
+                            <option value="{{project.name}}">{{project.name}}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button class='btn btn-outline-info height marg' type="submit">Delete</button>
+                </div>
+            </form>
+            <hr> 
+
+        {% else %}
+            <div class="content-section">
+                No projects added.
+            </div>
+
+        {% endif %}
+
+    {% else %}
+
+        <div class="content-section">
+            You need to be logged in in order to access this page.
+        </div>
+        <hr>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                <a class="ml-2" href="{% url 'login' %}">Log in</a>
+            </small>
+        </div>
+
+    {% endif %}
+
+
+{% endblock content %}

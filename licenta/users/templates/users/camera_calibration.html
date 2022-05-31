@@ -1,0 +1,155 @@
+{% extends "application/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} <title> Camera Calibration </title> {% endblock title %}
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<style>
+
+    #instructions{
+        color:black
+    }
+    #chess-a{
+        color:#1e5aba
+    }
+    @media (min-width: 1024px) {
+        .lg\:w-1\/5 {
+            width: 33%;
+        }
+    }
+</style>
+
+
+<br>
+<br>
+<div class="content-section" id="instructions"> In order to proper calibrate your camera, you must upload at least 15 photos of the
+     <a class="content-section" id="chess-a" href="http://boofcv.org/images/c/cc/Calibration_A4_chessboard_9x6.png" download>chessboard pattern.</a> 
+     Please make sure that the pictures you take have good illumination 
+     and that you capture the chessboard from different angles. It is highly recommended to use a clean background, as it improves the algorithm's speed.</div>
+<hr><br><br>
+<form method="POST" id="uploadimgform" enctype="multipart/form-data">
+    {% csrf_token %}
+
+
+    <div id="div_id_title" class="form-group"> <label for="id_title" class=" requiredField">
+            Title<span class="asteriskField ">*</span> </label>
+        <div class="pad"> <input type="text" name="title" placeholder="New configuration"
+                class="textinput textInput form-control marg" required id="id_title"> </div>
+    </div>
+    <div id="div_id_images" class="form-group"> <label for="id_images" class=" requiredField">
+            Images<span class="asteriskField ">*</span> </label>
+        <div class="pad"> <input type="file" name="images" multiple class="clearablefileinput form-control-file marg"
+                required id="id_images" accept='image/*'> </div>
+    </div>
+    
+    <button class='btn btn-outline-info height marg' type="submit">Upload</button>
+
+</form>
+<small class="text-muted">The fields marked with * are mandatory </small>
+<br>
+<br>
+<legend class="border-bottom mb-4">My configurations</legend>
+{% if CameraParamObjs %}
+{% for camparamobj in CameraParamObjs %}
+
+
+<div class="text-lg">{{camparamobj.name}}</div>
+<div class="min-w-screen bg-gray-100 flex items-center justify-center" style="background-color: white;">
+    <div class="max-w-7xl w-full mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row w-full lg:space-x-2 space-y-2 lg:space-y-0 mb-2 lg:mb-4">
+
+            <div class="w-full lg:w-1/5">
+                <div class="widget w-full p-4 rounded-lg bg-white border-l-4 border-purple-400"
+                    style="box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
+                    <div class="flex items-center">
+                        <div class="flex flex-col justify-center">
+                            <div class="text-lg">Camera matrix</div>
+                            <div class="text-sm text-gray-400">{{ camparamobj.K }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/5">
+                <div class="widget w-full p-4 rounded-lg bg-white border-l-4 border-blue-400"
+                    style="box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
+                    <div class="flex items-center">
+                        <div class="flex flex-col justify-center">
+                            <div class="text-lg">Distortion coefficients</div>
+                            <div class="text-sm text-gray-400">{{ camparamobj.dist }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/5">
+                <div class="widget w-full p-4 rounded-lg bg-white border-l-4 border-yellow-400"
+                    style="box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
+                    <div class="flex items-center">
+                        <div class="flex flex-col justify-center">
+                            <div class="text-lg">Focal Length (mm)</div>
+                            <div class="text-sm text-gray-400">{{ camparamobj.focal_length }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endfor %}
+
+
+<br>
+<legend class="border-bottom mb-4">Delete configurations</legend>
+<div class="content-section"> Please select the title for the configuration you want to delete. </div>
+<br>
+
+<form method="POST" action="{% url 'delete_camera_config' %}">
+    {% csrf_token %}
+
+    <div style="display: inline-flex; margin-bottom: 10px;">
+        <select class="form-select" aria-label="Default select example" name="select" required>
+
+            <option value="" disabled selected>Open the select menu</option>
+            {% for camparamobj in CameraParamObjs %}
+            <option value="{{camparamobj.name}}">{{camparamobj.name}}</option>
+            {% endfor %}
+        </select>
+
+        <button class='btn btn-outline-info height marg' type="submit">Delete</button>
+    </div>
+</form>
+<hr>
+
+{% else %}
+<div class="content-section"> No configurations added. </div>
+
+
+{% endif %}
+
+{% else %}
+
+<div class="content-section">
+    You need to be logged in in order to access this page.
+
+</div>
+<hr>
+<div class="border-top pt-3">
+    <small class="text-muted">
+
+        <a class="ml-2" href="{% url 'login' %}">Log in</a>
+    </small>
+</div>
+
+{% endif %}
+
+
+
+{% endblock content %}
