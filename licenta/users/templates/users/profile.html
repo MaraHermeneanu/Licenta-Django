@@ -1,0 +1,138 @@
+{% extends "application/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} <title> Profile | {{user.username}} </title> {% endblock title %}
+
+{% block content %}
+
+
+    <style>
+        #override {
+            min-height: 80vh;
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        #btnopt {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .material-card {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFF;
+            box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, .12);
+        }
+
+        @media screen and (min-width: 769px) {
+            #override1 {
+                margin-right: 50px;
+            }
+        }
+
+        @media screen and (max-width: 360px) {
+
+            #btnopt {
+                display: grid;
+            }
+
+            .marg {
+                margin-bottom: 10px;
+            }
+
+
+        }
+
+
+        @media screen and (max-width: 768px) {
+
+            #override {
+                display: block;
+
+            }
+
+            .material-card {
+                margin: auto;
+            }
+
+
+        }
+    </style>
+
+    <br>
+    <div id="override">
+
+        <div class="max-w-sm rounded material-card bg-white" style="text-align: center; height: 50%; ">
+            <img class="w-full rounded-t" src="{{ user.profile.image.url }}">
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl tracking-wide">{{ user.username }}</div>
+                <div class="text-gray-500 text-sm mb-3">{{ user.email }}</div>
+            </div>
+        </div>
+
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Profile Info</legend>
+
+                <div id="first_name" class="form-group"> <label for="first_name" class=" requiredField">
+                        First Name</label>
+                    <div class=""> <input type="text" name="first_name" value="{{user.first_name}}" class="form-control"
+                            required id="first_name"> </div>
+                </div>
+                <div id="last_name" class="form-group"> <label for="last_name" class=" requiredField">
+                        Last Name</label>
+                    <div class=""> <input type="text" name="last_name" value="{{user.last_name}}" class="form-control"
+                            required id="last_name"> </div>
+                </div>
+
+                <div id="div_id_username" class="form-group"> <label for="id_username" class=" requiredField">
+                        Username<span class="asteriskField">*</span> </label>
+                    <div class=""> <input type="text" name="username" value="{{user.username}}" maxlength="150"
+                            class="textinput textInput form-control" required id="id_username"> <small id="hint_id_username"
+                            class="form-text text-muted">150 characters or fewer. Letters, digits and @/./+/-/_
+                            only.</small> </div>
+                </div>
+                <div id="div_id_email" class="form-group"> <label for="id_email" class=" requiredField">
+                        Email<span class="asteriskField">*</span> </label>
+                    <div class=""> <input type="email" name="email" value="{{user.email}}" class="emailinput form-control"
+                            required id="id_email"> </div>
+                </div>
+
+
+
+                <div id="div_id_image" class="form-group"> <label for="id_image" class=" requiredField">
+                        Image<span class="asteriskField">*</span> </label>
+                    <div class="">
+
+                        <input type="file" name="image" accept="image/*" class="clearablefileinput form-control-file"
+                            id="id_image">
+                    </div>
+                </div>
+
+            <small class="text-muted">The fields marked with * are mandatory </small>
+            </fieldset>
+
+
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+                <a href="/password_change" class="btn btn-outline-info">Change password</a>
+
+            </div>
+
+
+            <hr>
+            <br>
+
+            <div id="btnopt">
+                <a href="/camera_calibration" class="btn btn-primary marg">Single calibration</a>
+                <a href="/stereo_calibration" class="btn btn-primary marg">Stereo calibration</a>
+            </div>
+
+        </form>
+    </div>
+
+
+{% endblock content %}

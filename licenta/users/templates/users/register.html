@@ -1,0 +1,75 @@
+{% extends "application/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} <title> Register </title> {% endblock title %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+
+        <div class="content-section">
+            You need to be logged out in order to register.
+        </div>
+        <hr>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+
+                <a class="ml-2" href="{% url 'logout' %}">Log out</a>
+            </small>
+        </div>
+
+    {% else %}
+        <br>
+        <div class="flex min-h-screen bg-white" style="min-height: 90vh; justify-content: center;">
+            <div class="w-1/2 bg-cover md:block hidden"
+                style="margin-right: 20px; box-sizing:border-box; background-image:  url(https://images.pexels.com/photos/3137064/pexels-photo-3137064.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940)">
+            </div>
+
+            <div class="content-section">
+                <form id="registerform" method="POST">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Join us</legend>
+                        {{ form|crispy }}
+                        <small class="text-muted">The fields marked with * are mandatory </small>
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-outline-info" type="submit">Sign up</button>
+                    </div>
+                </form>
+                
+                <div class="border-top pt-3">
+                    <small class="text-muted">
+                        Already have an account?
+                        <a class="ml-2" href="{% url 'login' %}">Sign In</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+
+{% endblock content %}
+
+<!-- {% block javascript %}
+ <script type="text/javascript">
+    $("#id_username").change(function () {
+    var form = $("#registerform");
+
+    $.ajax({
+      url: form.attr("validate-username-url"),
+      data: form.serialize(), // serializes the form's elements.
+      dataType: 'json',
+      success: function (data) {
+        if (data.is_taken) {
+          alert(data.error_message);
+        }
+      }
+    });
+
+  });
+
+</script> 
+
+{% endblock javascript %} -->
